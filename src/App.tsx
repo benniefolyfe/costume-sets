@@ -1,51 +1,24 @@
-import { Container,  } from "react-bootstrap";
-import Button from "react-bootstrap/esm/Button";
-import Col from "react-bootstrap/esm/Col";
-import Row from "react-bootstrap/esm/Row";
+import Container from "react-bootstrap/esm/Container";
 import Card from "react-bootstrap/esm/Card";
+
+import { UserAuthenticationForm } from "./components/user-authentication-form";
+import { MainControllers } from "./pages/main-controllers";
 import "./style.css"
-import { useEffect, useState } from "react"
-import { getUserData, updateUserData, useUserBlessing } from "./services/user";
-
-import { StatusText } from "./components/status-text";
-import { statusMessages } from "./objects/status-messages";
-import { ReverseBlessingButton } from "./components/reverse-blessing-button";
-
-
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { useEffect, useState } from 'react';
 
 function App() {
 
-
-  const [userName, setUserName] = useState<String>("")
-
-  const [statusText, setStatusText] = useState<String>(statusMessages.default)
+  const [cardContent, setCardContent] = useState<JSX.Element>(<></>);
 
   useEffect(() => {
-    async function fetchData() {
-      const userData = await getUserData()
-      setUserName(userData.data.profile.name)
-    }
-    fetchData()
+    setCardContent(<UserAuthenticationForm {...{setCardContent}}/>)
   }, [])
 
   return (
     <Container>
       <Card style={{ backgroundColor: '#13121F', color: 'white', padding: '20px', maxWidth: '405px' }}>
-        <Card.Body style={{ display: 'flex', flexDirection: "column", alignItems: 'center' }}>
-          <Row style={{ marginBottom: '15px' }}>
-            <Col style={{ textAlign: 'center' }}>
-              <iframe
-                title="avatar"
-                src="https://crookedneighbor.github.io/habitica-avatar/avatar.html#5bde0b79-bc72-42e8-a52b-281398b98de9"
-                scrolling="no"
-                style={{ width: "140px", height: "147px", overflowY: "hidden", border: "none" }}
-              ></iframe>
-              <h4>{userName}</h4>         
-            </Col>
-          </Row>
-          <StatusText content={ statusText } />
-          <ReverseBlessingButton {...{ setStatusText }}/>
-        </Card.Body>
+        {cardContent}
       </Card>
     </Container>
   );
