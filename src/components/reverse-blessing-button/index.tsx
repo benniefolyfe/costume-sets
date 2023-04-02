@@ -60,10 +60,7 @@ export const ReverseBlessingButton: React.FC<IProps> = ({ setStatusText }) => {
         const gameData = await fetchGameContent()
 
         const totalLevel = levelStatsHandler(userData.stats.lvl)
-        const totalBuffs = {
-            con: userData?.stats.buffs.con || 0,
-            int: userData?.stats.buffs.int || 0
-        }
+
         const totalDistributed = {
             con: userData?.stats.con || 0,
             int: userData?.stats.int || 0
@@ -75,8 +72,8 @@ export const ReverseBlessingButton: React.FC<IProps> = ({ setStatusText }) => {
         );
 
         return {
-            con: Math.floor(totalLevel + totalBuffs.con + totalDistributed.con + totalEquipped.con),
-            int: Math.floor(totalLevel + totalBuffs.int + totalDistributed.int + totalEquipped.int),
+            con: Math.floor(totalLevel + totalDistributed.con + totalEquipped.con),
+            int: Math.floor(totalLevel + totalDistributed.int + totalEquipped.int),
         }
     }
 
@@ -90,6 +87,7 @@ export const ReverseBlessingButton: React.FC<IProps> = ({ setStatusText }) => {
             "stats.buffs.con": userData.stats.buffs.con,
             "stats.buffs.int": userData.stats.buffs.int
         }
+
         const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
         await updateUser({
@@ -104,6 +102,7 @@ export const ReverseBlessingButton: React.FC<IProps> = ({ setStatusText }) => {
 
         await wait(3000)
 
+        console.log(currentUserAttributes)
         await updateUser(currentUserAttributes)
         setStatusText(statusMessages.finished)
 
@@ -113,7 +112,7 @@ export const ReverseBlessingButton: React.FC<IProps> = ({ setStatusText }) => {
     }
 
     return (
-        <Row>
+        <Row className="text-center">
             <Col>
                 <Button
                     className="dangerous-button"

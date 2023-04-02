@@ -15,7 +15,7 @@ const userModelObject = (): UserData => ({
         int: 0,
         mp: 0
     },
-    id: ""
+    id: "",
 });
 
 const gameDataObject = (): GameData => ({
@@ -29,10 +29,15 @@ export const HabiticaUserProvider: React.FC<PropsWithChildren<{}>> = ({ children
     });
     const [userData, setUserData] = useState<UserData>();
 
-    const syncUserData = async (apiUserDetails: HabiticaUserAPI) => {
-        const userData = await getUserData(apiUserDetails)
-        setHabiticaUserAPI(apiUserDetails)
-        setUserData(userData.data)
+    const authenticateUserData = async (apiUserDetails: HabiticaUserAPI): Promise<string> => {
+        try {
+            const userData = await getUserData(apiUserDetails)
+            setHabiticaUserAPI(apiUserDetails)
+            setUserData(userData.data)
+            return "Success"
+        } catch {
+            return "User ID or API Token is invalid!"
+        }     
     };
 
     const updateUser = async (payload: any) => {
@@ -52,7 +57,7 @@ export const HabiticaUserProvider: React.FC<PropsWithChildren<{}>> = ({ children
             value={{
                 userData: userData || userModelObject(),
                 updateUser,
-                syncUserData,
+                authenticateUserData,
                 CastBlessingSkill,
                 fetchGameContent,
             }}
@@ -65,7 +70,7 @@ export const HabiticaUserProvider: React.FC<PropsWithChildren<{}>> = ({ children
 export const HabiticaUserContext = createContext<UserContextType>({
     userData: userModelObject(),
     updateUser: async () => { },
-    syncUserData: async () => { },
+    authenticateUserData: async () => { return await "" },
     CastBlessingSkill: async () => { },
     fetchGameContent: async () => {
         return await gameDataObject()

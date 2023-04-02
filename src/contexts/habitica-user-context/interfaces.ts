@@ -32,7 +32,7 @@ interface GameData {
 interface UserContextType {
     userData: UserData,
     updateUser: (payload: any) => Promise<void>,
-    syncUserData: (apiUserDetails: HabiticaUserAPI) => Promise<void>,
+    authenticateUserData: (apiUserDetails: HabiticaUserAPI) => Promise<string>,
     CastBlessingSkill: (payload: any) => Promise<void>,
     fetchGameContent: () => Promise<GameData>
 }
