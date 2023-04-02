@@ -9,11 +9,11 @@ export const AvatarFrame = () => {
     const [userName, setUserName] = useState<String>("")
 
     useEffect(() => {
-        async function fetchData() {
-            const userData = await getUserData()
-            setUserName(userData.data.profile.name)
-        }
-        fetchData()
+        // async function fetchData() {
+        //     const userData = 
+        //     setUserName(userData.data.profile.name)
+        // }
+        // fetchData()
     }, [])
 
     return (

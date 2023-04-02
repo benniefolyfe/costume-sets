@@ -1,6 +1,3 @@
-import Container from "react-bootstrap/esm/Container";
-import Card from "react-bootstrap/esm/Card";
-
 import { useState } from "react";
 import { StatusText } from "../components/status-text";
 import { statusMessages } from "../objects/status-messages";

@@ -1,19 +1,27 @@
-import { useState } from "react"
+import { useContext, useState } from "react"
 import Button from "react-bootstrap/esm/Button";
 import Col from "react-bootstrap/esm/Col";
 import Row from "react-bootstrap/esm/Row";
 import { findKey } from "../../utils";
-import { Attributes, Equipment, EquippedObject, IProps, UserData } from "./interfaces";
-import { getGameData } from "../../services/content";
-import { getUserData, updateUserData, useUserBlessing } from "../../services/user";
+import { Attributes, Equipment, IProps } from "./interfaces";
 import { statusMessages } from "../../objects/status-messages";
+import { HabiticaUserContext } from "../../contexts/habitica-user-context";
+import { UserData } from "../../contexts/habitica-user-context/interfaces";
+import { EquippedObject } from "../../contexts/habitica-user-context/interfaces";
 
 export const ReverseBlessingButton: React.FC<IProps> = ({ setStatusText }) => {
+    
     const [buttonIsDisabled, setDisabledButton] = useState<boolean>(false)
+    const { 
+        userData,
+        updateUser,
+        CastBlessingSkill,
+        fetchGameContent
+    } = useContext(HabiticaUserContext)
 
     function calculateTotalEquipped(
         equippedObject: EquippedObject,
-        gearList: { [key: string]: Equipment },
+        gearList: { [key: string]: string },
         userClass: string
     ): Attributes {
         let totalAttributes = {
@@ -49,23 +57,22 @@ export const ReverseBlessingButton: React.FC<IProps> = ({ setStatusText }) => {
     }
 
     async function calculateTotalAttributes(userData: UserData) {
-        const gameData = await getGameData()
-        console.log(userData)
+        const gameData = await fetchGameContent()
 
         const totalLevel = levelStatsHandler(userData.stats.lvl)
         const totalBuffs = {
-            con: userData.stats.buffs.con,
-            int: userData.stats.buffs.int
+            con: userData?.stats.buffs.con || 0,
+            int: userData?.stats.buffs.int || 0
         }
         const totalDistributed = {
-            con: userData.stats.con,
-            int: userData.stats.int
+            con: userData?.stats.con || 0,
+            int: userData?.stats.int || 0
         }
         const totalEquipped = calculateTotalEquipped(
             userData.items.gear.equipped,
             gameData.data.gear,
             userData.stats.class
-        )
+        );
 
         return {
             con: Math.floor(totalLevel + totalBuffs.con + totalDistributed.con + totalEquipped.con),
@@ -77,16 +84,15 @@ export const ReverseBlessingButton: React.FC<IProps> = ({ setStatusText }) => {
         setDisabledButton(true)
         setStatusText(statusMessages.inProgress)
 
-        const userData = await getUserData()
-        const userAttributes = await calculateTotalAttributes(userData.data)
+        const userAttributes = await calculateTotalAttributes(userData)
         const currentUserAttributes = {
-            "stats.mp": userData.data.stats.mp,
-            "stats.buffs.con": userData.data.stats.buffs.con,
-            "stats.buffs.int": userData.data.stats.buffs.int
+            "stats.mp": userData.stats.mp,
+            "stats.buffs.con": userData.stats.buffs.con,
+            "stats.buffs.int": userData.stats.buffs.int
         }
         const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-        await updateUserData({
+        await updateUser({
             "stats.mp": 25,
             "stats.buffs.con": (630 + userAttributes.con) * -1,
             "stats.buffs.int": userAttributes.int * -1
@@ -94,11 +100,11 @@ export const ReverseBlessingButton: React.FC<IProps> = ({ setStatusText }) => {
 
         await wait(3000)
 
-        await useUserBlessing({})
+        await CastBlessingSkill({})
 
         await wait(3000)
 
-        await updateUserData(currentUserAttributes)
+        await updateUser(currentUserAttributes)
         setStatusText(statusMessages.finished)
 
         await wait(13000)
