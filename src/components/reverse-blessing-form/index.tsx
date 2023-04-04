@@ -1,29 +1,33 @@
 import { useContext, useState } from "react"
 import Button from "react-bootstrap/esm/Button";
-import Col from "react-bootstrap/esm/Col";
-import Row from "react-bootstrap/esm/Row";
 import { findKey } from "../../utils";
 import { Attributes, Equipment, IProps } from "./interfaces";
 import { statusMessages } from "../../objects/status-messages";
 import { HabiticaUserContext } from "../../contexts/habitica-user-context";
 import { UserData } from "../../contexts/habitica-user-context/interfaces";
 import { EquippedObject } from "../../contexts/habitica-user-context/interfaces";
+import Form from "react-bootstrap/esm/Form";
 
-export const ReverseBlessingButton: React.FC<IProps> = ({ setStatusText }) => {
-    
+export const ReverseBlessingForm: React.FC<IProps> = ({ setStatusText }) => {
+
+    const [damageAmount, setDamageAmount] = useState<number>(0)
     const [buttonIsDisabled, setDisabledButton] = useState<boolean>(false)
-    const { 
+    const {
         userData,
         updateUser,
         CastBlessingSkill,
         fetchGameContent
     } = useContext(HabiticaUserContext)
 
-    function calculateTotalEquipped(
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setDamageAmount(Number(e.target.value))
+    }
+
+    const calculateTotalEquipped = (
         equippedObject: EquippedObject,
         gearList: { [key: string]: string },
         userClass: string
-    ): Attributes {
+    ): Attributes => {
         let totalAttributes = {
             con: 0,
             int: 0
@@ -49,14 +53,14 @@ export const ReverseBlessingButton: React.FC<IProps> = ({ setStatusText }) => {
         return totalAttributes
     }
 
-    function levelStatsHandler(level: number): number {
+    const levelStatsHandler = (level: number): number => {
         const actualLevelStat = level / 2
 
         if (actualLevelStat <= 50) return actualLevelStat
         return 50
     }
 
-    async function calculateTotalAttributes(userData: UserData) {
+    const calculateTotalAttributes = async (userData: UserData) => {
         const gameData = await fetchGameContent()
 
         const totalLevel = levelStatsHandler(userData.stats.lvl)
@@ -77,11 +81,18 @@ export const ReverseBlessingButton: React.FC<IProps> = ({ setStatusText }) => {
         }
     }
 
-    async function DealFriendlyFire() {
+    const calculateConRequired = (damage: number): number => {
+        return (damage / 0.04 - 5) + 10
+    }
+
+    const DealPartyDamage = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+
         setDisabledButton(true)
         setStatusText(statusMessages.inProgress)
 
         const userAttributes = await calculateTotalAttributes(userData)
+        const requiredCon = calculateConRequired(damageAmount)
         const currentUserAttributes = {
             "stats.mp": userData.stats.mp,
             "stats.buffs.con": userData.stats.buffs.con,
@@ -92,7 +103,7 @@ export const ReverseBlessingButton: React.FC<IProps> = ({ setStatusText }) => {
 
         await updateUser({
             "stats.mp": 25,
-            "stats.buffs.con": (630 + userAttributes.con) * -1,
+            "stats.buffs.con": (requiredCon + userAttributes.con) * -1,
             "stats.buffs.int": userAttributes.int * -1
         })
 
@@ -102,7 +113,6 @@ export const ReverseBlessingButton: React.FC<IProps> = ({ setStatusText }) => {
 
         await wait(3000)
 
-        console.log(currentUserAttributes)
         await updateUser(currentUserAttributes)
         setStatusText(statusMessages.finished)
 
@@ -110,20 +120,28 @@ export const ReverseBlessingButton: React.FC<IProps> = ({ setStatusText }) => {
         setDisabledButton(false)
         setStatusText(statusMessages.default)
     }
-
+    
     return (
-        <Row className="text-center">
-            <Col>
-                <Button
-                    className="dangerous-button"
-                    variant="danger"
-                    size="lg"
-                    onClick={() => DealFriendlyFire()}
-                    disabled={buttonIsDisabled}
-                >
-                    <img src="/images/white-skull.png" alt="skull" width="128px" />
-                </Button>
-            </Col>
-        </Row>
+        <Form onSubmit={DealPartyDamage}>
+            <Form.Group className="mb-3 text-start" controlId="formBasicEmail">
+                <Form.Label className="text-start">Damage value</Form.Label>
+                <Form.Control
+                    type="number"
+                    placeholder="Enter a desired amount of damage"
+                    onChange={handleChange}
+                    name="damageAmount"
+                />
+            </Form.Group>
+
+            <Button
+                className="w-100"
+                variant="danger"
+                size="lg"
+                disabled={buttonIsDisabled}
+                type="submit"
+            >
+                Apply
+            </Button>
+        </Form>
     )
 }
