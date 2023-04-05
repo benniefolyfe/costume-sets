@@ -4,24 +4,26 @@ import { HabiticaUserAPI } from "./interfaces";
 const BASE_URL = "https://habitica.com/api/v3/";
 
 interface endpoints {
-    USER: string,
-    CONTENT: string,
-    GROUPS: string,
+  USER: string,
+  CONTENT: string,
+  GROUPS: string,
+  TASKS: string,
 }
 
 export const ENDPOINTS: endpoints = {
   USER: "user",
   CONTENT: "content",
-  GROUPS: 'groups'
+  GROUPS: 'groups',
+  TASKS: 'tasks'
 };
 
-export const createAPIEndpoint = (endpoint:string) => {
+export const createAPIEndpoint = (endpoint: string) => {
   const AUTHOR_ID = "5bde0b79-bc72-42e8-a52b-281398b98de9";
 
   let url = BASE_URL + endpoint + "/";
-  
+
   return {
-    // Get user
+    // USER ENDPOINT
     getUser: (apiUserDetails: HabiticaUserAPI) =>
       axios.get(url, {
         headers: {
@@ -41,26 +43,45 @@ export const createAPIEndpoint = (endpoint:string) => {
     useUserBlessing: (apiUserDetails: HabiticaUserAPI, payload: {}) =>
       axios.post(`${url}class/cast/healAll`, payload, {
         headers: {
-            "x-client": AUTHOR_ID,
-            "x-api-user": apiUserDetails.userId,
-            "x-api-key": apiUserDetails.apiToken,
+          "x-client": AUTHOR_ID,
+          "x-api-user": apiUserDetails.userId,
+          "x-api-key": apiUserDetails.apiToken,
         },
       }),
-    getGameContent: (apiUserDetails: HabiticaUserAPI) => 
-        axios.get(url, {
+
+    // CONTENT ENDPOINT
+    getGameContent: (apiUserDetails: HabiticaUserAPI) =>
+      axios.get(url, {
         headers: {
           "x-client": AUTHOR_ID,
           "x-api-user": apiUserDetails.userId,
           "x-api-key": apiUserDetails.apiToken,
         },
       }),
-    updateGroup: (id: string) =>
-      axios.put(`${url}${id}`, {
-        "name": "Hello!"
-      }, {
+
+    // TASKS ENDPOINT 
+    createTask: (apiUserDetails: HabiticaUserAPI, payload: any) =>
+      axios.post(`${url}user`, payload, {
         headers: {
-          "x-api-user": "5bde0b79-bc72-42e8-a52b-281398b98de9",
-          "x-api-key": "d650f75c-efd3-4256-a607-8d19d77dfd4c",
+          "x-client": AUTHOR_ID,
+          "x-api-user": apiUserDetails.userId,
+          "x-api-key": apiUserDetails.apiToken,
+        },
+      }),
+    scoreTask: (apiUserDetails: HabiticaUserAPI, taskId: string) =>
+      axios.post(`${url}${taskId}/score/up`, taskId, {
+        headers: {
+          "x-client": AUTHOR_ID,
+          "x-api-user": apiUserDetails.userId,
+          "x-api-key": apiUserDetails.apiToken,
+        },
+      }),
+    deleteTask: (apiUserDetails: HabiticaUserAPI, taskId: string) =>
+      axios.delete(`${url}${taskId}`, {
+        headers: {
+          "x-client": AUTHOR_ID,
+          "x-api-user": apiUserDetails.userId,
+          "x-api-key": apiUserDetails.apiToken,
         },
       }),
   };

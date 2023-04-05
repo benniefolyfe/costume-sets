@@ -28,7 +28,7 @@ export const UserAuthenticationForm = () => {
     e.preventDefault()
 
     const response = await authenticateUserData(habiticaUserAPI)
-    
+
     if (response === "Success") {
       navigate('/home', { replace: true });
       return
@@ -40,7 +40,10 @@ export const UserAuthenticationForm = () => {
     <Row>
       <Col className="text-center">
         <h3>Boss Healer & Reverse Blessing</h3>
-        <p className="text-secondary mb-5">This tool allows you heal, increase boss life and deal damage to your party members.</p>
+        <p className="text-secondary">This tool allows you heal boss health and reverse effects of your Blessing skill to deal damage to your party members.</p>
+        
+        <div className="divider mb-4 mt-4"></div>
+
         <h5 className="mb-4">Enter your Habitica API details</h5>
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3 text-start" controlId="formBasicEmail">
@@ -48,7 +51,7 @@ export const UserAuthenticationForm = () => {
             <Form.Control
               type="text"
               placeholder="Enter your user ID"
-              onChange={handleChange} 
+              onChange={handleChange}
               name="userId"
             />
           </Form.Group>

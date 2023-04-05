@@ -27,12 +27,3 @@ export const useUserBlessing = async (apiUserDetails: HabiticaUserAPI, payload: 
         console.log(err);
     }
 }
-
-export const updateGroupData = async (id: string) => {
-    try {
-        const res = await createAPIEndpoint(ENDPOINTS.GROUPS).updateGroup(id);
-        return res.data;
-    } catch (err) {
-        console.log(err)
-    }
-}

@@ -1,17 +1,22 @@
 import { HabiticaUserAPI } from "../../api/interfaces";
 
-interface Buffs {
+interface Attributes {
+    str: number;
     con: number;
     int: number;
+    per: number;
 }
-
 interface Stats {
     lvl: number;
-    buffs: Buffs;
+    buffs: Attributes;
     class: string;
+    str: number;
     con: number;
     int: number;
+    per: number;
     mp: number;
+    exp: number;
+    gp: number;
 }
 
 interface UserData {
@@ -19,22 +24,28 @@ interface UserData {
     items: { gear: { equipped: EquippedObject } };
     stats: Stats;
     id: string;
+    party: { quest: { progress: { up: number } } }
 }
 
 interface EquippedObject {
-  [key: string]: string;
-}
-
-interface GameData {
-    data: { gear: EquippedObject }
+    [key: string]: string;
 }
 
 interface UserContextType {
-    userData: UserData,
-    updateUser: (payload: any) => Promise<void>,
-    authenticateUserData: (apiUserDetails: HabiticaUserAPI) => Promise<string>,
-    CastBlessingSkill: (payload: any) => Promise<void>,
-    fetchGameContent: () => Promise<GameData>
+    userData: UserData;
+    updateUser: (payload: any) => Promise<void>;
+    authenticateUserData: (apiUserDetails: HabiticaUserAPI) => Promise<string>;
+    CastBlessingSkill: (payload: any) => Promise<void>;
+    calculateTotalAttributes: (userData: UserData) => Promise<Attributes>;
+    createTask: (payload: any) => Promise<string>;
+    scoreTask: (payload: any) => Promise<void>;
+    deleteTask: (payload: any) => Promise<void>;
 }
 
-export type { Buffs, Stats, UserData, GameData, UserContextType, EquippedObject }
+export type {
+    Stats,
+    UserData,
+    UserContextType,
+    EquippedObject,
+    Attributes
+}
