@@ -10,7 +10,7 @@ export const CreditsAcknowledgments = () => {
                 <a href="https://wallpapers.com/wallpapers/creepy-pumpkin-haunted-mansion-0zmssfxqa0i7agye.html">
                 Background by yourleastfavoriteperson</a> on Wallpapers.com
             </p>
-              <p>Thanks for @cerejas, @Islleo and @boomsickle from Habitica</p>
+        <p>Thanks for @benniefolyfe and @Islleo from Habitica</p>
         </Col>
     </Row>
   )
