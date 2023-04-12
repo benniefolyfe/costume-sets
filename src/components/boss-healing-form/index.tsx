@@ -14,6 +14,7 @@ export const BossHealingForm: React.FC<IHomeProps> = ({ setStatusText, buttonIsD
 
     const {
         userData,
+        setUserData,
         updateUser,
         createTask,
         scoreTask,
@@ -44,7 +45,7 @@ export const BossHealingForm: React.FC<IHomeProps> = ({ setStatusText, buttonIsD
         setStatusText("Preparing the healing potion, please wait...")
 
         const userAttributes = await calculateTotalAttributes(userData)
-        const requiredStr = calculateStrRequired(healSettings.healingAmount)
+        let requiredStr = calculateStrRequired(healSettings.healingAmount)
         const currentUserAttributes = {
             "stats.mp": userData.stats.mp,
             "stats.gp": userData.stats.gp,
@@ -61,31 +62,49 @@ export const BossHealingForm: React.FC<IHomeProps> = ({ setStatusText, buttonIsD
         }
 
         await updateUser({
-            "stats.buffs.str": (requiredStr + userAttributes.str) * -1,
+            "stats.buffs.str": -(requiredStr + userAttributes.str),
             "stats.buffs.per": -1000
         })
 
         await wait(3000)
 
         const taskId = await createTask(newTask)
-        await wait(3000)
+        await wait(1500)
 
-        await scoreTask(taskId)
-        await wait(3000)
+        const taskResult = await scoreTask(taskId, 'up')
+        await wait(1500)
+
+        const taskDamageUp = taskResult._tmp.quest.progressDelta
+        
+        if (Math.abs(taskDamageUp) !== Math.abs(healSettings.healingAmount)) {
+            const correctHealingAmount = Number(taskDamageUp) + Number(healSettings.healingAmount)
+            const newRequiredStr = calculateStrRequired(correctHealingAmount)
+
+            await updateUser({
+                "stats.buffs.str": -(newRequiredStr + userAttributes.str),
+            })
+            await wait(3000)
+            await scoreTask(taskId, 'down')
+            await wait(1500)
+            await scoreTask(taskId, 'up')
+            await wait(1500)
+        }
 
         await deleteTask(taskId)
         await wait(3000)
 
-        await updateUser(currentUserAttributes)
+        const updatedUserData = await updateUser(currentUserAttributes)
+        console.log(updatedUserData)
+        setUserData(updatedUserData)
         setStatusText(statusMessages.finished)
 
-        await wait(13000)
+        await wait(10000)
         setDisabledButton(false)
         setStatusText(statusMessages.default)
     }
 
     return (
-        <Form onSubmit={HealBoss}>
+        <Form onSubmit={HealBoss} name="heal">
             <p style={{ fontSize: '0.9rem' }}>
                 You can increase a boss's health above its maximum, 
                 but be aware that the health can go back to its max HP 

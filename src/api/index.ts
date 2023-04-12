@@ -68,8 +68,8 @@ export const createAPIEndpoint = (endpoint: string) => {
           "x-api-key": apiUserDetails.apiToken,
         },
       }),
-    scoreTask: (apiUserDetails: HabiticaUserAPI, taskId: string) =>
-      axios.post(`${url}${taskId}/score/up`, taskId, {
+    scoreTask: (apiUserDetails: HabiticaUserAPI, taskId: string, direction: string) =>
+      axios.post(`${url}${taskId}/score/${direction}`, taskId, {
         headers: {
           "x-client": AUTHOR_ID,
           "x-api-user": apiUserDetails.userId,

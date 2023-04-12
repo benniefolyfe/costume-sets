@@ -10,9 +10,9 @@ export const createTaskForUser = async (apiUserDetails: HabiticaUserAPI, payload
     } 
 };
 
-export const scoreTaskForUser = async (apiUserDetails: HabiticaUserAPI, taskId: string) => {
+export const scoreTaskForUser = async (apiUserDetails: HabiticaUserAPI, taskId: string, direction: string) => {
     try {
-        const res = await createAPIEndpoint(ENDPOINTS.TASKS).scoreTask(apiUserDetails, taskId);
+        const res = await createAPIEndpoint(ENDPOINTS.TASKS).scoreTask(apiUserDetails, taskId, direction);
         return res.data;
     } catch (err) {
         console.log(err);

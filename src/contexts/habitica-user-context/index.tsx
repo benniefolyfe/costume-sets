@@ -1,8 +1,8 @@
-import React, { createContext, useState, PropsWithChildren } from 'react';
+import React, { createContext, useState, PropsWithChildren, SetStateAction } from 'react';
 import { HabiticaUserAPI } from '../../api/interfaces';
 import { getGameData } from '../../services/content';
 import { getUserData, updateUserData, useUserBlessing } from '../../services/user';
-import { UserData, UserContextType, EquippedObject, Attributes } from './interfaces';
+import { UserData, UserContextType, EquippedObject, Attributes, TaskData } from './interfaces';
 import { findKey } from '../../utils';
 import { createTaskForUser, scoreTaskForUser, deleteTaskForUser } from '../../services/task';
 
@@ -32,6 +32,10 @@ const attributesModelObject = (): Attributes => ({
     per: 0,
 })
 
+const taskDataModelObject = (): TaskData => ({
+    _tmp: { quest: { progressDelta: 0 } }
+})
+
 export const HabiticaUserProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
     const [habiticaUserAPI, setHabiticaUserAPI] = useState<HabiticaUserAPI>({
         userId: '',
@@ -50,8 +54,9 @@ export const HabiticaUserProvider: React.FC<PropsWithChildren<{}>> = ({ children
         }
     };
 
-    const updateUser = async (payload: any) => {
-        await updateUserData(habiticaUserAPI, payload)
+    const updateUser = async (payload: any):Promise<UserData> => {
+        const userData = await updateUserData(habiticaUserAPI, payload)
+        return userData.data
     };
 
     const CastBlessingSkill = async (payload: any) => {
@@ -133,8 +138,9 @@ export const HabiticaUserProvider: React.FC<PropsWithChildren<{}>> = ({ children
         return taskData.data.id
     }
 
-    const scoreTask = async (taskId: string) => {
-        await scoreTaskForUser(habiticaUserAPI, taskId)
+    const scoreTask = async (taskId: string, direction: string) => {
+        const taskData = await scoreTaskForUser(habiticaUserAPI, taskId, direction)
+        return taskData.data
     }
 
     const deleteTask = async (taskId: string) => {
@@ -145,6 +151,7 @@ export const HabiticaUserProvider: React.FC<PropsWithChildren<{}>> = ({ children
         <HabiticaUserContext.Provider
             value={{
                 userData: userData || userModelObject(),
+                setUserData: setUserData,
                 updateUser,
                 authenticateUserData,
                 CastBlessingSkill,
@@ -161,13 +168,14 @@ export const HabiticaUserProvider: React.FC<PropsWithChildren<{}>> = ({ children
 
 export const HabiticaUserContext = createContext<UserContextType>({
     userData: userModelObject(),
-    updateUser: async () => {},
+    setUserData: (value: SetStateAction<UserData | undefined>) => { },
+    updateUser: async () => { return await userModelObject() },
     authenticateUserData: async () => { return await "" },
     CastBlessingSkill: async () => {},
     calculateTotalAttributes: async () => {
         return await attributesModelObject()
     },
     createTask: async () => { return await "" },
-    scoreTask: async () => {},
+    scoreTask: async () => { return await taskDataModelObject() },
     deleteTask: async () => {}
 })

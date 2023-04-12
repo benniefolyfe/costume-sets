@@ -31,14 +31,19 @@ interface EquippedObject {
     [key: string]: string;
 }
 
+interface TaskData {
+    _tmp: { quest: { progressDelta: number }}
+}
+
 interface UserContextType {
     userData: UserData;
-    updateUser: (payload: any) => Promise<void>;
+    setUserData: React.Dispatch<React.SetStateAction<UserData | undefined>>
+    updateUser: (payload: any) => Promise<UserData>;
     authenticateUserData: (apiUserDetails: HabiticaUserAPI) => Promise<string>;
     CastBlessingSkill: (payload: any) => Promise<void>;
     calculateTotalAttributes: (userData: UserData) => Promise<Attributes>;
     createTask: (payload: any) => Promise<string>;
-    scoreTask: (payload: any) => Promise<void>;
+    scoreTask: (payload: any, direction: string) => Promise<TaskData>;
     deleteTask: (payload: any) => Promise<void>;
 }
 
@@ -47,5 +52,6 @@ export type {
     UserData,
     UserContextType,
     EquippedObject,
-    Attributes
+    Attributes,
+    TaskData,
 }
