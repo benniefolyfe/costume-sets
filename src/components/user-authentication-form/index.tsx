@@ -39,7 +39,7 @@ export const UserAuthenticationForm = () => {
   return (
     <Row>
       <Col className="text-center">
-        <h3>Boss Healer & Reverse Blessing</h3>
+        <h3>Boss Healing & Reverse Blessing</h3>
         <p className="text-secondary">This tool allows you heal boss health and reverse effects of your Blessing skill to deal damage to your party members.</p>
         
         <div className="divider mb-4 mt-4"></div>

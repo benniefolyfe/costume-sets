@@ -20,7 +20,7 @@ export const ENDPOINTS: endpoints = {
 export const createAPIEndpoint = (endpoint: string) => {
   const AUTHOR_ID = "5bde0b79-bc72-42e8-a52b-281398b98de9";
 
-  let url = BASE_URL + endpoint + "/";
+  const url = BASE_URL + endpoint + "/";
 
   return {
     // USER ENDPOINT
