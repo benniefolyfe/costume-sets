@@ -41,7 +41,7 @@ Reverse Blessing reverses the user's Constitution by setting it to a negative nu
     npm start
     ```
 
-## 🧱 Tecnologies
+## 🧱 Technologies
 
 - React JS
 - React Bootstrap
