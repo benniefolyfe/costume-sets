@@ -5,12 +5,9 @@ import { HabiticaUserContext } from "../../contexts/habitica-user-context";
 import Form from "react-bootstrap/esm/Form";
 import { statusMessages } from '../../objects/status-messages';
 
-interface Healing {
-    healingAmount: number,
-    isResetingPendingDamage: boolean
-}
-
 export const BossHealingForm: React.FC<IHomeProps> = ({ setStatusText, buttonIsDisabled, setDisabledButton }) => {
+
+    const [validated, setValidated] = useState<boolean>(false)
 
     const {
         userData,
@@ -22,16 +19,10 @@ export const BossHealingForm: React.FC<IHomeProps> = ({ setStatusText, buttonIsD
         calculateTotalAttributes
     } = useContext(HabiticaUserContext)
 
-    const [healSettings, setHealSettings] = useState<Healing>({
-        healingAmount: 0,
-        isResetingPendingDamage: false
-    })
+    const [healingAmount, setHealingAmount] = useState<number>(0)
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setHealSettings({
-            ...healSettings,
-            [e.target.name]: e.target.value
-        })
+        setHealingAmount(Number(e.target.value))
     }
 
     const calculateStrRequired = (healing: number): number => {     
@@ -41,11 +32,14 @@ export const BossHealingForm: React.FC<IHomeProps> = ({ setStatusText, buttonIsD
     const HealBoss = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
 
+        setValidated(true)
+        if (!healingAmount) return
+
         setDisabledButton(true)
         setStatusText("Preparing the healing potion, please wait...")
 
         const userAttributes = await calculateTotalAttributes(userData)
-        let requiredStr = calculateStrRequired(healSettings.healingAmount)
+        let requiredStr = calculateStrRequired(healingAmount)
         const currentUserAttributes = {
             "stats.mp": userData.stats.mp,
             "stats.gp": userData.stats.gp,
@@ -76,8 +70,8 @@ export const BossHealingForm: React.FC<IHomeProps> = ({ setStatusText, buttonIsD
 
         const taskDamageUp = taskResult._tmp.quest.progressDelta
         
-        if (Math.abs(taskDamageUp) !== Math.abs(healSettings.healingAmount)) {
-            const correctHealingAmount = Number(taskDamageUp) + Number(healSettings.healingAmount)
+        if (Math.abs(taskDamageUp) !== Math.abs(healingAmount)) {
+            const correctHealingAmount = Number(taskDamageUp) + Number(healingAmount)
             const newRequiredStr = calculateStrRequired(correctHealingAmount)
 
             await updateUser({
@@ -101,23 +95,27 @@ export const BossHealingForm: React.FC<IHomeProps> = ({ setStatusText, buttonIsD
         await wait(10000)
         setDisabledButton(false)
         setStatusText(statusMessages.default)
+        setValidated(false)
+        setHealingAmount(0)
     }
 
     return (
-        <Form onSubmit={HealBoss} name="heal">
+        <Form onSubmit={HealBoss} name="boss-healing-form" noValidate validated={validated}>
             <p style={{ fontSize: '0.9rem' }}>
-                You can increase a boss's health above its maximum, 
-                but be aware that the health can go back to its max HP 
-                when the rage bar is unleashed.
+                Boss health can exceed its maximum, but will reset when rage bar is unleashed.
             </p>
-            <Form.Group className="mb-3 text-start" controlId="formBasicEmail">
+            <Form.Group className="mb-3 text-start">
                 <Form.Label className="text-start">Heal value</Form.Label>
                 <Form.Control
                     type="number"
                     placeholder="Enter a desired amount of healing"
                     onChange={handleChange}
                     name="healingAmount"
+                    required
                 />
+                <Form.Control.Feedback type="invalid">
+                    Please provide a value.
+                </Form.Control.Feedback>
             </Form.Group>
 
             <Button

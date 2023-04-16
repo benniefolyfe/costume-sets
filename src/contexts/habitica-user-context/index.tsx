@@ -42,17 +42,29 @@ export const HabiticaUserProvider: React.FC<PropsWithChildren<{}>> = ({ children
         apiToken: ''
     });
     const [userData, setUserData] = useState<UserData>();
+    const [isAuthenticating, setIsAuthenticating] = useState<boolean>(false)
 
     const authenticateUserData = async (apiUserDetails: HabiticaUserAPI): Promise<string> => {
+        setIsAuthenticating(true)
+        
         try {
             const userData = await getUserData(apiUserDetails)
             setHabiticaUserAPI(apiUserDetails)
             setUserData(userData.data)
+            setIsAuthenticating(false)
             return "Success"
         } catch {
             return "User ID or API Token is invalid!"
         }
     };
+
+    const clearUserData = () => {    
+        setUserData(userModelObject)
+
+        localStorage.setItem('canSave', 'false')
+        localStorage.setItem('userId', '')
+        localStorage.setItem('apiToken', '')
+    }
 
     const updateUser = async (payload: any):Promise<UserData> => {
         const userData = await updateUserData(habiticaUserAPI, payload)
@@ -158,7 +170,9 @@ export const HabiticaUserProvider: React.FC<PropsWithChildren<{}>> = ({ children
                 calculateTotalAttributes,
                 createTask,
                 scoreTask,
-                deleteTask
+                deleteTask,
+                clearUserData,
+                isAuthenticating
             }}
         >
             {children}
@@ -177,5 +191,7 @@ export const HabiticaUserContext = createContext<UserContextType>({
     },
     createTask: async () => { return await "" },
     scoreTask: async () => { return await taskDataModelObject() },
-    deleteTask: async () => {}
+    deleteTask: async () => {},
+    clearUserData: () => {},
+    isAuthenticating: false
 })

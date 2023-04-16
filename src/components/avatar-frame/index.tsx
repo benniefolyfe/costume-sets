@@ -14,7 +14,7 @@ export const AvatarFrame = () => {
             return (
                 <div className="mt-2">
                     <small style={{ color: 'rgba(255, 255, 255, 0.5)' }}>Pending damage:</small>
-                    <p className="text-danger mb-1">{roundedPendingDamage}</p>
+                    <p className="text-danger">{roundedPendingDamage}</p>
                     <small className="text-danger">You'll deal damage on your next cron.</small>
                 </div>
             )
@@ -29,7 +29,7 @@ export const AvatarFrame = () => {
     }
 
     return (
-        <Row className="mb-3">
+        <Row>
             <Col>
                 <iframe
                     title="avatar"

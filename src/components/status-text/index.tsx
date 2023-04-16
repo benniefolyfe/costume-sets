@@ -8,7 +8,7 @@ interface IProps {
 
 export const StatusText: React.FC<IProps> = ({ content }) => {
   return (
-      <Row className="mt-2" style={{ height: '48px' }}>
+      <Row style={{ height: '48px' }}>
           <Col style={{ textAlign: 'center' }}>
               <p>{content}</p>
           </Col>

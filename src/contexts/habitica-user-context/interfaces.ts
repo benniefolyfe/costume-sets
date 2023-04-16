@@ -45,6 +45,8 @@ interface UserContextType {
     createTask: (payload: any) => Promise<string>;
     scoreTask: (payload: any, direction: string) => Promise<TaskData>;
     deleteTask: (payload: any) => Promise<void>;
+    clearUserData: () => void
+    isAuthenticating: boolean
 }
 
 export type {

@@ -7,6 +7,8 @@ import Form from "react-bootstrap/esm/Form";
 
 export const ReverseBlessingForm: React.FC<IHomeProps> = ({ setStatusText, buttonIsDisabled, setDisabledButton }) => {
 
+    const [validated, setValidated] = useState<boolean>(false)
+
     const {
         userData,
         updateUser,
@@ -26,6 +28,9 @@ export const ReverseBlessingForm: React.FC<IHomeProps> = ({ setStatusText, butto
 
     const DealPartyDamage = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
+
+        setValidated(true)
+        if (!damageAmount) return
 
         setDisabledButton(true)
         setStatusText("Reversing your blessing, please wait.")
@@ -58,10 +63,12 @@ export const ReverseBlessingForm: React.FC<IHomeProps> = ({ setStatusText, butto
         await wait(13000)
         setDisabledButton(false)
         setStatusText(statusMessages.default)
+        setValidated(false)
+        setDamageAmount(0)
     }
     
     return (
-        <Form onSubmit={DealPartyDamage}>
+        <Form onSubmit={DealPartyDamage} name="reverse-blessing-form" noValidate validated={validated}>
             <p style={{ fontSize: '0.9rem' }}>
                 If you are in a party, let them know that you are doing this.
             </p>
@@ -72,7 +79,11 @@ export const ReverseBlessingForm: React.FC<IHomeProps> = ({ setStatusText, butto
                     placeholder="Enter a desired amount of damage"
                     onChange={handleChange}
                     name="damageAmount"
+                    required
                 />
+                <Form.Control.Feedback type="invalid">
+                    Please provide a value.
+                </Form.Control.Feedback>
             </Form.Group>
 
             <Button

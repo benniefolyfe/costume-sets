@@ -1,0 +1,16 @@
+body {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: url("/public/images/background.jpg") no-repeat center center;
+    background-size: cover;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: white;
+}
+
+p, label, ul {
+    color: rgba(255, 255, 255, 0.5);
+}

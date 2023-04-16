@@ -6,6 +6,7 @@ import { AvatarFrame } from "../../components/avatar-frame";
 import { Tab, Tabs } from "react-bootstrap";
 import { BossHealingForm } from "../../components/boss-healing-form";
 import { HabiticaUserContext } from "../../contexts/habitica-user-context";
+import { Divider } from "../../components/divider";
 
 
 export const Home = () => {
@@ -18,9 +19,9 @@ export const Home = () => {
     return (
         <>
             <AvatarFrame />
-            <div className="divider"></div>
+            <Divider />
             <StatusText content={statusText} />
-            <div className="divider mb-3"></div>
+            <Divider />
             <Tabs
                 defaultActiveKey="healing"
                 id="fill-tab-example"
